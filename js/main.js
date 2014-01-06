@@ -1,96 +1,115 @@
 $(function () {
 
-    //variables
-    var numberOfPieces = 12,
-        aspect = "3:4",
-        aspectW = parseInt(aspect.split(":")[0]),
-        aspectH = parseInt(aspect.split(":")[1]),
-        container = $("#puzzle"),
-        imgContainer = container.find("figure"),
-        img = imgContainer.find("img"),
-        path = img.attr("src"),
-        piece = $("<div/>"),
-        pieceW = Math.floor(img.width() / aspectW),
-        pieceH = Math.floor(img.height() / aspectH),
-        idCounter = 0,
-        positions = [],
-        empty = {
-            top: 0,
-            left: 0,
-            bottom: pieceH,
-            right: pieceW
-        },
-        previous = {},
-        timer,
-        currentTime = {},
-        timerDisplay = container.find("#time").find("span");
 
-    //generate puzzle pieces
+  // ---- variables ---- //
+
+  var numberOfPieces = 4,
+    // pieces by width and height
+    aspectW = 2,
+    aspectH = 2,
+    // main container
+    container = $("#puzzle"),
+    // locate image within main container
+    imgContainer = container.find("figure"),
+    img = imgContainer.find("img"),
+    path = img.attr("src"),
+    // calulate size of each piece
+    piece = $("<div/>"),
+    pieceW = Math.floor(img.width() / aspectW),
+    pieceH = Math.floor(img.height() / aspectH),
+    // counter for each piece
+    idCounter = 0,
+    // locations of each piece
+    positions = [],
+    // location of empty piece
+    empty = {
+        top: 0,
+        left: 0,
+        bottom: pieceH,
+        right: pieceW
+    },
+    // locations of previous pieces
+    previous = {},
+    // time tracking
+    timer,
+    currentTime = {},
+    timerDisplay = container.find("#time").find("span");
+
+
+    // ---- generate puzzle pieces ---- //
+
+    // loops through twice for both height and width
     for (var x = 0, y = aspectH; x < y; x++) {
-        for (var a = 0, b = aspectW; a < b; a++) {
-            var top = pieceH * x,
-                left = pieceW * a;
+      for (var a = 0, b = aspectW; a < b; a++) {
+        // alighn puzzle pieces
+        var top = pieceH * x,
+            left = pieceW * a;
 
-            piece.clone().attr("id", idCounter++).css({
-                width: pieceW,
-                height: pieceH,
-                position: "absolute",
-                top: top,
-                left: left,
-                backgroundImage: ["url(", path, ")"].join(""),
-                backgroundPosition: ["-", pieceW * a, "px ", "-", pieceH * x, "px"].join("")
-            }).appendTo(imgContainer);
+        // copy the div  element, assigning each piece basic styles and an unique id
+        piece.clone().attr("id", idCounter++).css({
+            width: pieceW,
+            height: pieceH,
+            position: "absolute",
+            top: top,
+            left: left,
+            backgroundImage: ["url(", path, ")"].join(""),
+            backgroundPosition: ["-", pieceW * a, "px ", "-", pieceH * x, "px"].join("")
+        // each piece is then appended to the imgContainer
+        }).appendTo(imgContainer);
 
-            //store positions
-            positions.push({ top: top, left: left });
-        }
+        // store positions
+        positions.push({ top: top, left: left });
+      }
     }
 
-    //remove original image
+    // remove image
     img.remove();
 
-    //remove first piece from board
+    // remove first piece from board
     container.find("#0").remove();
 
-    //remove first item in positions array
+    // remove first item in positions array
     positions.shift();
 
+    // ---- event handler ---- //
     $("#start").on("click", function (e) {
 
-        //shuffle the pieces randomly
-        var pieces = imgContainer.children();
+      // shuffle the pieces randomly
+      var pieces = imgContainer.children();
 
-        function shuffle(array) {
-            var i = array.length;
-            if (i === 0) {
-                return false;
-            }
-            while (--i) {
-                var j = Math.floor(Math.random() * (i + 1)),
-                    tempi = array[i],
-                    tempj = array[j];
-
-                array[i] = tempj;
-                array[j] = tempi;
-            }
+      // helper function
+      function shuffle(array) {
+        var i = array.length;
+        if (i === 0) {
+          return false;
         }
+        while (--i) {
+          var j = Math.floor(Math.random() * (i + 1)),
+              tempi = array[i],
+              tempj = array[j];
 
-        shuffle(pieces);
+          array[i] = tempj;
+          array[j] = tempi;
+        }
+      }
 
-        //set position of shuffled images
-        $.each(pieces, function (i) {
-            pieces.eq(i).css(positions[i]);
-        });
+      // call the helper function, pass in the array
+      shuffle(pieces);
 
-        //replace existing pieces with shuffled pieces
-        pieces.appendTo(imgContainer);
+      //set position of shuffled images
+      $.each(pieces, function (i) {
+        pieces.eq(i).css(positions[i]);
+      });
 
-        //make sure empty slot is at position 0 when timer starts
-        empty.top = 0;
-        empty.left = 0;
+      //replace existing pieces with shuffled pieces
+      pieces.appendTo(imgContainer);
 
-        //remove any previous messages
-        container.find("#ui").find("p").not("#time").remove();
+      //make sure empty slot is at position 0 when timer starts
+      empty.top = 0;
+      empty.left = 0;
+
+      //remove any previous messages
+      container.find("#ui").find("p").not("#time").remove();
 
         //cancel previous timer
         if (timer) {
