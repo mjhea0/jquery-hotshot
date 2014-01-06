@@ -35,7 +35,6 @@ $(function () {
     currentTime = {},
     timerDisplay = container.find("#time").find("span");
 
-
     // ---- generate puzzle pieces ---- //
 
     // loops through twice for both height and width
@@ -250,7 +249,7 @@ $(function () {
 
               // append message to the dom
               $("<p/>", {
-                text: "Congratulations, you solved the puzzle!"
+                text: "Congratulations. You solved the puzzle!"
               }).appendTo("#ui");
 
               // convert time to seconds
@@ -265,7 +264,7 @@ $(function () {
                   localStorage.setItem("puzzleBestTime", totalSeconds);
 
                   $("<p/>", {
-                    text: "you got a new best time!"
+                    text: "You got a new best time!"
                   }).appendTo("#ui");
                 }
               } else {
@@ -291,4 +290,7 @@ $(function () {
         }
       }
   });
+    $('#restart').click(function() {
+      location.reload();
+    });
 });
